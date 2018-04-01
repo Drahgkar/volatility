@@ -27,6 +27,7 @@
 import socket
 import volatility.plugins.linux.common as linux_common
 import volatility.obj as obj
+from volatility.renderers import TreeGrid
 
 class a_ent(object):
 
@@ -129,6 +130,19 @@ class linux_arp(linux_common.AbstractLinuxCommand):
                 ret.append(a_ent(ip, mac, devname))
 
         return ret
+
+    def unified_output(self, data):
+        return TreeGrid([("ip",str),
+                       ("mac",str),
+                       ("devname",str)],
+                       self.generator(data))
+
+    def generator(self, data):
+        for ent in data:
+            yield (0, [ str(ent.ip),
+                        str(ent.mac),
+                        str(ent.devname),
+                      ])
 
     def render_text(self, outfd, data):
         for ent in data:

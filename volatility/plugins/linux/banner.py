@@ -29,6 +29,7 @@ import volatility.debug as debug
 import volatility.plugins.linux.flags as linux_flags
 import volatility.plugins.linux.common as linux_common
 import volatility.plugins.linux.pslist as linux_pslist
+from volatility.renderers import TreeGrid
 
 class linux_banner(linux_common.AbstractLinuxCommand):
     """ Prints the Linux banner information """
@@ -44,7 +45,17 @@ class linux_banner(linux_common.AbstractLinuxCommand):
             debug.error("linux_banner symbol not found. Please report this as a bug on the issue tracker: https://code.google.com/p/volatility/issues/list")
 
         yield banner.strip()
-    
+
+    def unified_output(self, data):
+        return TreeGrid([("banner", str)],
+                       self.generator(data))    
+
+    def generator(self, data):
+        for banner in data:
+            yield (0, [
+             str(banner),
+             ])
+
     def render_text(self, outfd, data):
         for banner in data:
             outfd.write("{0:s}\n".format(banner))

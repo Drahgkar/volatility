@@ -26,6 +26,7 @@
 import volatility.obj as obj
 import volatility.debug as debug
 import volatility.plugins.linux.common as linux_common
+from volatility.renderers import TreeGrid
 
 class linux_check_evt_arm(linux_common.AbstractLinuxARMCommand):
     ''' Checks the Exception Vector Table to look for syscall table hooking '''
@@ -75,6 +76,20 @@ class linux_check_evt_arm(linux_common.AbstractLinuxARMCommand):
             yield ("vector_swi code modification", "FAIL", "Opcode E28F80?? not found")
             return
           
+    def unified_output(self, data):
+        return TreeGrid([("check", str),
+                      ("result", str),
+                      ("info", str)],
+                       self.generator(data))
+
+    def generator(self, data):
+        for (check, result, info) in data:
+            yield (0, [
+                      str(check),
+                      str(result),
+                      str(info),
+                      ])
+
     def render_text(self, outfd, data):
         self.table_header(outfd, [("Check", "<30"), ("PASS/FAIL", "<5"), ("Info", "<30")])
         for (check, result, info) in data:

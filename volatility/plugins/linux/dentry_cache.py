@@ -26,6 +26,7 @@
 
 import volatility.plugins.linux.common as linux_common
 from volatility.plugins.linux.slab_info import linux_slabinfo
+from volatility.renderers import TreeGrid
 
 class linux_dentry_cache(linux_common.AbstractLinuxCommand):
     """Gather files from the dentry cache"""
@@ -65,6 +66,16 @@ class linux_dentry_cache(linux_common.AbstractLinuxCommand):
 
         for dentry in cache:
             yield self.make_body(dentry)
+
+    def unified_output(self, data):
+           return TreeGrid([("bodyline", str)],
+                           self.generator(data))
+
+    def generator(self, data):
+        for bodyline in data:
+            yield (0, [
+                str(bodyline),
+                      ])
 
     def render_text(self, outfd, data):
 

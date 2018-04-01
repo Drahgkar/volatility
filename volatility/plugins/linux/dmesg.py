@@ -26,6 +26,7 @@
 
 import volatility.obj as obj
 import volatility.plugins.linux.common as linux_common
+from volatility.renderers import TreeGrid
 
 class linux_dmesg(linux_common.AbstractLinuxCommand):
     """Gather dmesg buffer"""
@@ -91,6 +92,16 @@ class linux_dmesg(linux_common.AbstractLinuxCommand):
 
         else:
             yield self._pre_3(log_buf_addr, log_buf_len)
+
+    def unified_output(self, data):
+        return TreeGrid([("buf", str),
+                    self.generator(data))
+
+    def generator(self, data):
+        for buf in data:
+            yield (0, [
+                        str(buf),
+                      ])
 
     def render_text(self, outfd, data):
 

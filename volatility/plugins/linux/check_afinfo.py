@@ -28,6 +28,7 @@ import os
 import volatility.obj as obj
 import volatility.plugins.linux.common as linux_common
 import volatility.plugins.linux.lsmod as linux_lsmod
+from volatility.renderers import TreeGrid
 
 class linux_check_afinfo(linux_common.AbstractLinuxCommand):
     """Verifies the operation function pointers of network protocols"""
@@ -77,6 +78,22 @@ class linux_check_afinfo(linux_common.AbstractLinuxCommand):
                 for (name, member, address) in self.check_afinfo(global_var_name, global_var, op_members, seq_members, modules):
                     yield (name, member, address)
         
+    def unified_output(self, data):
+        return TreeGrid([
+                         ("what", str),
+                         ("member", str),
+                         ("address", str)
+                        ],
+                       self.generator(data))
+
+    def generator(self, data):
+        for (what, member, address) in data:
+            yield (0, [
+                       str(what),
+                       str(member),
+                       str(address),
+                      ])
+
     def render_text(self, outfd, data):
 
         self.table_header(outfd, [("Symbol Name", "42"), 
